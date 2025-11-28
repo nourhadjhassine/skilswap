@@ -1,0 +1,123 @@
+/* Reset global */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Assurer que tout prend 100% */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Container principal */
+.welcome-container {
+  min-height: 100%;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f5f5, #e0e0e0); /* Fond fixe */
+  color: #333;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Titre principal */
+.welcome-container h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+/* Phrase descriptive */
+.welcome-container p {
+  font-size: 1.2rem;
+  max-width: 500px;
+  margin-bottom: 2rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+/* Groupe de boutons */
+.button-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Bouton principal */
+.button-primary {
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #3498db;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button-primary:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+/* Bouton secondaire */
+.button-secondary {
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  background-color: transparent;
+  color: #3498db;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.button-secondary:hover {
+  background-color: #3498db;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Scroll hint */
+.scroll-down {
+  margin-top: 3rem;
+  font-size: 2rem;
+  color: #3498db;
+  animation: bounce 2s infinite;
+}
+
+/* Animations */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .welcome-container h1 {
+    font-size: 2rem;
+  }
+  .welcome-container p {
+    font-size: 1rem;
+  }
+  .button-group {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .button-primary, .button-secondary {
+    width: 100%;
+  }
+}
