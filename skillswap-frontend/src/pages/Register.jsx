@@ -1,19 +1,29 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/Register.css"; // <-- Import du CSS
+import "../styles/Register.css";
+import { registerUser } from "../services/api"; // ✅ Import API
 
 export default function Register() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Créer un compte :", { name, email, password });
-    // Ici on pourra appeler l'API backend plus tard
-    alert("Compte créé ! (simulation)");
-    navigate("/login"); // Redirige vers Login après inscription
+    setLoading(true);
+    try {
+      // ✅ Appel API pour inscription
+      const response = await registerUser({ name, email, password });
+      alert(response.data.message); // Message du backend
+      navigate("/login"); // Redirection après succès
+    } catch (error) {
+      alert(error.response?.data?.message || "Erreur lors de l'inscription");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -32,8 +42,7 @@ export default function Register() {
         <input
           type="email"
           placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+                   onChange={(e) => setEmail(e.target.value)}
           required
         />
 
@@ -45,7 +54,9 @@ export default function Register() {
           required
         />
 
-        <button type="submit">Créer un compte</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Création..." : "Créer un compte"}
+        </button>
 
         <p
           className="switch-link"

@@ -1,37 +1,14 @@
-// skillswap-frontend/src/pages/Home.jsx
-import React, { useState } from "react";
+
+// src/pages/Home.jsx
+import React, { useEffect, useState } from "react";
+import "../styles/Home.css";
+import { getSkills, addSkill } from "../services/api"; // ✅ Service API
 
 export default function Home() {
-  // Compétences initiales (mock data)
-  const [skills, setSkills] = useState([
-    {
-      id: 1,
-      name: "Guitare",
-      description: "Cours pour débutants",
-      category: "Musique",
-      contact: {
-        whatsapp: "123456789",
-        facebook: "fb.com/user",
-        instagram: "insta_user",
-      },
-    },
-    {
-      id: 2,
-      name: "Photoshop",
-      description: "Bases du design",
-      category: "Art",
-      contact: {
-        whatsapp: "987654321",
-        facebook: "fb.com/artist",
-        instagram: "insta_artist",
-      },
-    },
-  ]);
-
-  // État pour afficher le formulaire
+  const [skills, setSkills] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-
-  // État du formulaire d'ajout
+  const [submitting, setSubmitting] = useState(false);
   const [newSkill, setNewSkill] = useState({
     name: "",
     description: "",
@@ -39,106 +16,192 @@ export default function Home() {
     contact: { whatsapp: "", facebook: "", instagram: "" },
   });
 
-  // Ajouter une compétence
-  const handleAddSkill = (e) => {
+  const token = localStorage.getItem("token");
+
+  // ✅ Charger les compétences depuis l’API
+  useEffect(() => {
+    const fetchSkills = async () => {
+      try {
+        const res = await getSkills(); // GET /api/skills
+        setSkills(res.data);           // tableau d'objets Skill depuis MongoDB
+      } catch (err) {
+        console.error("Erreur getSkills:", err);
+        alert(
+          err.response?.data?.message ||
+            "Erreur lors du chargement des compétences"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSkills();
+  }, []);
+
+  // ✅ Ajouter une compétence via l’API (protégée par JWT)
+  const handleAddSkill = async (e) => {
     e.preventDefault();
-    if (!newSkill.name || !newSkill.description || !newSkill.category) return;
 
-    setSkills([
-      ...skills,
-      { id: skills.length + 1, ...newSkill },
-    ]);
+    if (!newSkill.name || !newSkill.description || !newSkill.category) {
+      alert("Veuillez remplir nom, description et catégorie.");
+      return;
+    }
 
-    // Reset du formulaire
-    setNewSkill({ name: "", description: "", category: "", contact: { whatsapp: "", facebook: "", instagram: "" } });
-    setShowForm(false);
+    if (!token) {
+      alert("Vous devez être connecté pour ajouter une compétence.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await addSkill(newSkill, token); // POST /api/skills
+      // Ajoute la nouvelle compétence renvoyée par l’API à la liste
+      setSkills((prev) => [...prev, res.data]);
+
+      // Reset form et fermeture
+      setNewSkill({
+        name: "",
+        description: "",
+        category: "",
+        contact: { whatsapp: "", facebook: "", instagram: "" },
+      });
+      setShowForm(false);
+      alert("Compétence ajoutée avec succès !");
+    } catch (err) {
+      console.error("Erreur addSkill:", err);
+      alert(err.response?.data?.message || "Erreur lors de l'ajout de la compétence");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6">Compétences disponibles</h1>
+  // Optional: Bouton de déconnexion
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  };
 
-      {/* Bouton Ajouter */}
-      <button
-        onClick={() => setShowForm(!showForm)}
-        className="mb-6 bg-indigo-600 text-white px-6 py-3 rounded hover:bg-indigo-700 transition"
-      >
-        {showForm ? "Annuler" : "Ajouter une compétence"}
-      </button>
+  if (loading) {
+    return (
+      <div className="home-container">
+        <p>Chargement des compétences...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="home-container">
+      <div className="home-header">
+        <h1>Compétences disponibles</h1>
+        <div className="actions">
+          <button
+            onClick={() => setShowForm(true)}
+            className="add-skill-btn"
+            disabled={!token}
+            title={!token ? "Connectez-vous pour ajouter une compétence" : ""}
+          >
+            Ajouter une compétence
+          </button>
+          <button className="logout-btn" onClick={handleLogout}>
+            Déconnexion
+          </button>
+        </div>
+      </div>
 
       {/* Formulaire Ajouter */}
       {showForm && (
-        <form onSubmit={handleAddSkill} className="mb-6 bg-white p-6 rounded shadow-md max-w-md">
-          <h2 className="text-xl font-semibold mb-4">Nouvelle compétence</h2>
+        <form onSubmit={handleAddSkill} className="skill-form">
+          <h2>Nouvelle compétence</h2>
+
           <input
             type="text"
             placeholder="Nom de la compétence"
             value={newSkill.name}
             onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })}
-            className="w-full p-2 mb-3 border rounded"
             required
           />
+
           <input
             type="text"
             placeholder="Description"
             value={newSkill.description}
-            onChange={(e) => setNewSkill({ ...newSkill, description: e.target.value })}
-            className="w-full p-2 mb-3 border rounded"
+            onChange={(e) =>
+              setNewSkill({ ...newSkill, description: e.target.value })
+            }
             required
           />
+
           <input
             type="text"
             placeholder="Catégorie"
             value={newSkill.category}
-            onChange={(e) => setNewSkill({ ...newSkill, category: e.target.value })}
-            className="w-full p-2 mb-3 border rounded"
+            onChange={(e) =>
+              setNewSkill({ ...newSkill, category: e.target.value })
+            }
             required
           />
 
-          <h3 className="text-lg font-semibold mb-2">Contact utilisateur</h3>
+          <h3>Contact utilisateur</h3>
           <input
             type="text"
             placeholder="WhatsApp"
             value={newSkill.contact.whatsapp}
-            onChange={(e) => setNewSkill({ ...newSkill, contact: { ...newSkill.contact, whatsapp: e.target.value } })}
-            className="w-full p-2 mb-3 border rounded"
+            onChange={(e) =>
+              setNewSkill({
+                ...newSkill,
+                contact: { ...newSkill.contact, whatsapp: e.target.value },
+              })
+            }
           />
           <input
             type="text"
             placeholder="Facebook"
             value={newSkill.contact.facebook}
-            onChange={(e) => setNewSkill({ ...newSkill, contact: { ...newSkill.contact, facebook: e.target.value } })}
-            className="w-full p-2 mb-3 border rounded"
+            onChange={(e) =>
+              setNewSkill({
+                ...newSkill,
+                contact: { ...newSkill.contact, facebook: e.target.value },
+              })
+            }
           />
           <input
             type="text"
             placeholder="Instagram"
             value={newSkill.contact.instagram}
-            onChange={(e) => setNewSkill({ ...newSkill, contact: { ...newSkill.contact, instagram: e.target.value } })}
-            className="w-full p-2 mb-3 border rounded"
+            onChange={(e) =>
+              setNewSkill({
+                ...newSkill,
+                contact: { ...newSkill.contact, instagram: e.target.value },
+              })
+            }
           />
 
-          <button
-            type="submit"
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-          >
-            Ajouter
-          </button>
+          <div className="form-actions">
+            <button type="submit" className="btn-submit" disabled={submitting}>
+              {submitting ? "Ajout..." : "Ajouter"}
+            </button>
+            <button
+              type="button"
+              className="btn-cancel"
+              onClick={() => setShowForm(false)}
+            >
+              Annuler
+            </button>
+          </div>
         </form>
       )}
 
       {/* Liste des compétences */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="skills-grid">
         {skills.map((skill) => (
-          <div key={skill.id} className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
-            <h2 className="text-xl font-semibold mb-1">{skill.name}</h2>
-            <p className="text-gray-700 mb-1">{skill.description}</p>
-            <p className="text-sm text-gray-500 mb-2">Catégorie : {skill.category}</p>
-            <div className="text-sm">
-              <p>WhatsApp: {skill.contact.whatsapp || "-"}</p>
-              <p>Facebook: {skill.contact.facebook || "-"}</p>
-              <p>Instagram: {skill.contact.instagram || "-"}</p>
-            </div>
+          <div key={skill._id || skill.id} className="skill-card">
+            <h2>{skill.name}</h2>
+            <p>{skill.description}</p>
+            <p>Catégorie : {skill.category}</p>
+
+            {/* Le champ contact peut ne pas exister pour certains documents */}
+            <p>WhatsApp: {skill.contact?.whatsapp || "-"}</p>
+            <p>Facebook: {skill.contact?.facebook || "-"}</p>
+            <p>Instagram: {skill.contact?.instagram || "-"}</p>
           </div>
         ))}
       </div>

@@ -1,0 +1,178 @@
+/* Reset global */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Container principal */
+.home-container {
+  min-height: 100vh;
+  width: 100%;
+  padding: 40px;
+  background: linear-gradient(135deg, #f5f5f5, #e0e0e0); /* Soft neutral gradient */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* Titre principal */
+.home-container h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Bouton Ajouter */
+.add-skill-btn {
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #3498db; /* Bleu identique au login */
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-bottom: 2rem;
+}
+
+.add-skill-btn:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+/* Formulaire ajout compétence */
+.skill-form {
+  background: rgba(255, 255, 255, 0.95); /* Lighter background pour contraste */
+  padding: 40px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 380px; /* Même largeur que login */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  animation: fadeIn 1s ease-out;
+  margin-bottom: 2rem;
+}
+
+/* Formulaire titres */
+.skill-form h2, .skill-form h3 {
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Champs input */
+.skill-form input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: none;
+  background-color: #f5f5f5; /* Même que login */
+  color: #333;
+  font-size: 1rem;
+  transition: 0.3s ease;
+}
+
+.skill-form input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.4); /* Focus bleu identique login */
+}
+
+/* Boutons Ajouter / Annuler */
+.skill-form .btn-submit, .skill-form .btn-cancel {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-bottom: 10px;
+}
+
+.skill-form .btn-submit {
+  background-color: #3498db; /* Bleu identique login */
+  color: white;
+}
+
+.skill-form .btn-submit:hover {
+  background-color: #2980b9;
+  transform: translateY(-3px);
+}
+
+.skill-form .btn-cancel {
+  background-color: #e74c3c; /* Rouge vif pour contraste */
+  color: white;
+}
+
+.skill-form .btn-cancel:hover {
+  background-color: #c0392b;
+  transform: translateY(-3px);
+}
+
+/* Grille compétences */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Carte compétence */
+.skill-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.skill-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* Infos compétence */
+.skill-card h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.skill-card p {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-bottom: 0.3rem;
+}
+
+/* Animation fade-in */
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(-30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive mobile */
+@media (max-width: 480px) {
+  .home-container h1 {
+    font-size: 2rem;
+  }
+  .skill-form {
+    padding: 30px 20px;
+  }
+  .skill-form input, .skill-form .btn-submit, .skill-form .btn-cancel {
+    font-size: 0.95rem;
+  }
+}

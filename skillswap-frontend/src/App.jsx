@@ -1,21 +1,49 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Welcome from './pages/Welcome';
-import Register from './pages/Register';
-import Login from './pages/Login';
-import Home from './pages/Home';
 
-function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Welcome />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/home" element={<Home />} />
-      </Routes>
-    </Router>
-  );
+// src/App.jsx
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import "./styles/App.css";
+
+// Import des pages
+import Welcome from "./pages/Welcome.jsx";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import Home from "./pages/Home.jsx";
+
+// ✅ Composant de protection des routes (requiert un token)
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    // Pas de token → redirection vers /login
+    return <Navigate to="/login" replace />;
+  }
+  return children;
 }
 
-export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Page d’accueil */}
+        <Route path="/" element={<Welcome />} />
+
+        {/* Auth */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* Home protégée (nécessite token) */}
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Fallback → si route inconnue */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
